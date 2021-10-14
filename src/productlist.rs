@@ -9,11 +9,11 @@ use nom::{
 use std::str::FromStr;
 
 #[derive(Debug, PartialEq, Eq)]
-struct ProductList {
+pub struct ProductList {
     products: Vec<u64>,
 }
 
-fn parse(input: &str) -> IResult<&str, ProductList> {
+pub fn parse(input: &str) -> IResult<&str, ProductList> {
     let (input, (_tagname, _whitespace, ids)) = delimited(
         tag("[["),
         tuple((tag_name, colon_with_whitespace, ids)),

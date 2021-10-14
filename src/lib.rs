@@ -1,1 +1,1 @@
-mod productlist;
+pub mod productlist;
