@@ -16,14 +16,14 @@ pub struct ProductList {
 pub fn parse(input: &str) -> IResult<&str, ProductList> {
     let (input, (_tagname, _whitespace, ids)) = delimited(
         tag("[["),
-        tuple((tag_name, colon_with_whitespace, ids)),
+        tuple((element_name, colon_with_whitespace, ids)),
         tag("]]"),
     )(input)?;
 
     Ok((input, ProductList { products: ids }))
 }
 
-fn tag_name(input: &str) -> IResult<&str, &str> {
+fn element_name(input: &str) -> IResult<&str, &str> {
     tag_no_case("productlist")(input)
 }
 
