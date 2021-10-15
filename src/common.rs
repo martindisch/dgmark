@@ -1,14 +1,14 @@
 use nom::{
     character::complete::{char, digit1, multispace0},
-    combinator::{map_res, recognize},
+    combinator::{map_res, value},
     multi::separated_list1,
     sequence::tuple,
     IResult,
 };
 use std::str::FromStr;
 
-pub fn colon_with_whitespace(input: &str) -> IResult<&str, &str> {
-    recognize(tuple((char(':'), multispace0)))(input)
+pub fn colon_with_whitespace(input: &str) -> IResult<&str, ()> {
+    value((), tuple((char(':'), multispace0)))(input)
 }
 
 pub fn ids(input: &str) -> IResult<&str, Vec<u64>> {
@@ -25,20 +25,20 @@ mod tests {
 
     #[test]
     fn colon_alone() {
-        let input = ":";
-        assert_eq!(Ok(("", ":")), colon_with_whitespace(input));
+        let input = ":a";
+        assert_eq!(Ok(("a", ())), colon_with_whitespace(input));
     }
 
     #[test]
     fn colon_spaces() {
-        let input = ":  ";
-        assert_eq!(Ok(("", ":  ")), colon_with_whitespace(input));
+        let input = ":  a";
+        assert_eq!(Ok(("a", ())), colon_with_whitespace(input));
     }
 
     #[test]
     fn colon_tab() {
-        let input = ":\t";
-        assert_eq!(Ok(("", ":\t")), colon_with_whitespace(input));
+        let input = ":\ta";
+        assert_eq!(Ok(("a", ())), colon_with_whitespace(input));
     }
 
     #[test]
