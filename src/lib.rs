@@ -13,11 +13,7 @@ pub enum Element<'a> {
 }
 
 pub fn parse(input: &str) -> IResult<&str, Vec<Element>> {
-    let result = many0(alt((parse_productlist, parse_text)))(input);
-
-    let (input, elements) = result?;
-
-    Ok((input, elements))
+    many0(alt((parse_text, parse_productlist)))(input)
 }
 
 fn parse_text(input: &str) -> IResult<&str, Element> {
