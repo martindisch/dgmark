@@ -12,7 +12,7 @@ pub struct ProductList {
 }
 
 pub fn parse(input: &str) -> IResult<&str, ProductList> {
-    let (input, (_tagname, _whitespace, ids)) = delimited(
+    let (input, (_element_name, _whitespace, ids)) = delimited(
         tag("[["),
         tuple((element_name, colon_with_whitespace, ids)),
         tag("]]"),
