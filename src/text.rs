@@ -1,9 +1,14 @@
 use nom::{
-    branch::alt, bytes::complete::take_until, combinator::rest, IResult,
+    branch::alt,
+    bytes::complete::{take_until1, take_while1},
+    IResult,
 };
 
 pub fn parse(input: &str) -> IResult<&str, &str> {
-    alt((take_until("[["), rest))(input)
+    // TODO: if take_until1 fails (e.g. when tag is first thing encountered),
+    // take_while1 will eat everything. To prevent it, this parser needs to be
+    // the last one evaluated, which is not necessarily intuitive.
+    alt((take_until1("[["), take_while1(|_| true)))(input)
 }
 
 #[cfg(test)]
