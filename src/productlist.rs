@@ -7,9 +7,7 @@ use nom::{
 use crate::common::*;
 
 #[derive(Debug, PartialEq, Eq)]
-pub struct ProductList {
-    products: Vec<u64>,
-}
+pub struct ProductList(pub Vec<u64>);
 
 pub fn parse(input: &str) -> IResult<&str, ProductList> {
     let (input, (_element_name, _whitespace, ids)) = delimited(
@@ -18,7 +16,7 @@ pub fn parse(input: &str) -> IResult<&str, ProductList> {
         tag("]]"),
     )(input)?;
 
-    Ok((input, ProductList { products: ids }))
+    Ok((input, ProductList(ids)))
 }
 
 fn element_name(input: &str) -> IResult<&str, &str> {
@@ -32,20 +30,12 @@ mod tests {
     #[test]
     fn full_tag() {
         let input = "[[productlist: 1|20|31]]";
-        assert_eq!(
-            Ok((
-                "",
-                ProductList {
-                    products: vec![1, 20, 31]
-                }
-            )),
-            parse(input)
-        );
+        assert_eq!(Ok(("", ProductList(vec![1, 20, 31]))), parse(input));
     }
 
     #[test]
     fn simple_tag() {
         let input = "[[productlist:1]]";
-        assert_eq!(Ok(("", ProductList { products: vec![1] })), parse(input));
+        assert_eq!(Ok(("", ProductList(vec![1]))), parse(input));
     }
 }
