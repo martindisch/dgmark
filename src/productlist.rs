@@ -1,11 +1,13 @@
 use nom::{
     bytes::complete::{tag, tag_no_case},
+    combinator::value,
     sequence::{delimited, tuple},
     IResult,
 };
 
 use crate::common::*;
 
+/// A list of product IDs.
 #[derive(Debug, PartialEq, Eq)]
 pub struct ProductList(pub Vec<u64>);
 
@@ -19,8 +21,8 @@ pub fn parse(input: &str) -> IResult<&str, ProductList> {
     Ok((input, ProductList(ids)))
 }
 
-fn element_name(input: &str) -> IResult<&str, &str> {
-    tag_no_case("productlist")(input)
+fn element_name(input: &str) -> IResult<&str, ()> {
+    value((), tag_no_case("productlist"))(input)
 }
 
 #[cfg(test)]

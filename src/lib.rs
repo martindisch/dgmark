@@ -6,12 +6,14 @@ mod text;
 
 pub use productlist::ProductList;
 
+/// Enum of all elements of a markdown text.
 #[derive(Debug, PartialEq, Eq)]
 pub enum Element<'a> {
     ProductList(ProductList),
     Text(&'a str),
 }
 
+/// Parses a full markdown text into its list of elements.
 pub fn parse(input: &str) -> IResult<&str, Vec<Element>> {
     many0(alt((parse_productlist, parse_text)))(input)
 }
