@@ -18,11 +18,13 @@ pub fn parse(input: &str) -> IResult<&str, Vec<Element>> {
     many0(alt((parse_productlist, parse_text)))(input)
 }
 
+/// Parses text and wraps it in an `Element` variant.
 fn parse_text(input: &str) -> IResult<&str, Element> {
     let (input, text) = text::parse(input)?;
     Ok((input, Element::Text(text)))
 }
 
+/// Parses a `ProductList` and wraps it in an `Element` variant.
 fn parse_productlist(input: &str) -> IResult<&str, Element> {
     let (input, productlist) = productlist::parse(input)?;
     Ok((input, Element::ProductList(productlist)))

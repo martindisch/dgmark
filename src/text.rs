@@ -4,6 +4,7 @@ use nom::{
     Err, FindSubstring, IResult, InputLength, InputTake, Slice,
 };
 
+/// Parses non-empty text.
 pub fn parse(input: &str) -> IResult<&str, &str> {
     take_until1_relaxed("[[")(input)
 }

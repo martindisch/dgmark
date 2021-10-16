@@ -7,14 +7,17 @@ use nom::{
 };
 use std::str::FromStr;
 
+/// Matches a colon followed by any whitespace, discarding it.
 pub fn colon_with_whitespace(input: &str) -> IResult<&str, ()> {
     value((), tuple((char(':'), multispace0)))(input)
 }
 
+/// Parses a list of IDs separated by the vertical bar '|'.
 pub fn ids(input: &str) -> IResult<&str, Vec<u64>> {
     separated_list1(char('|'), id)(input)
 }
 
+/// Parses a single unsigned integer.
 pub fn id(input: &str) -> IResult<&str, u64> {
     map_res(digit1, FromStr::from_str)(input)
 }

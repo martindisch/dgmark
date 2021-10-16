@@ -11,6 +11,7 @@ use crate::common::*;
 #[derive(Debug, PartialEq, Eq)]
 pub struct ProductList(pub Vec<u64>);
 
+/// Parses a `ProductList`.
 pub fn parse(input: &str) -> IResult<&str, ProductList> {
     let (input, (_element_name, _whitespace, ids)) = delimited(
         tag("[["),
@@ -21,6 +22,7 @@ pub fn parse(input: &str) -> IResult<&str, ProductList> {
     Ok((input, ProductList(ids)))
 }
 
+/// Matches the product list's tag, discarding it.
 fn element_name(input: &str) -> IResult<&str, ()> {
     value((), tag_no_case("productlist"))(input)
 }
