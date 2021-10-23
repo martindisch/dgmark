@@ -1,16 +1,20 @@
 use nom::{branch::alt, multi::many0, IResult};
+use serde::{Deserialize, Serialize};
 
 mod common;
 mod productlist;
 mod text;
 
-pub use productlist::ProductList;
+pub use productlist::Product;
 
 /// Enum of all elements of a markdown text.
-#[derive(Debug, PartialEq, Eq)]
-pub enum Element<'a> {
-    ProductList(ProductList),
-    Text(&'a str),
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
+pub enum Element {
+    ProductList {
+        #[serde(rename = "Product")]
+        products: Vec<Product>,
+    },
+    Text(String),
 }
 
 /// Parses a full markdown text into its list of elements.
@@ -21,13 +25,13 @@ pub fn parse(input: &str) -> IResult<&str, Vec<Element>> {
 /// Parses text and wraps it in an `Element` variant.
 fn parse_text(input: &str) -> IResult<&str, Element> {
     let (input, text) = text::parse(input)?;
-    Ok((input, Element::Text(text)))
+    Ok((input, Element::Text(text.into())))
 }
 
-/// Parses a `ProductList` and wraps it in an `Element` variant.
+/// Parses a product list and wraps it in an `Element` variant.
 fn parse_productlist(input: &str) -> IResult<&str, Element> {
-    let (input, productlist) = productlist::parse(input)?;
-    Ok((input, Element::ProductList(productlist)))
+    let (input, products) = productlist::parse(input)?;
+    Ok((input, Element::ProductList { products }))
 }
 
 #[cfg(test)]
@@ -44,7 +48,7 @@ mod tests {
     fn just_text() {
         let input = "The quick brown fox";
         assert_eq!(
-            Ok(("", vec![Element::Text("The quick brown fox")])),
+            Ok(("", vec![Element::Text("The quick brown fox".into())])),
             parse(input)
         );
     }
@@ -53,7 +57,12 @@ mod tests {
     fn just_productlist() {
         let input = "[[productlist:1]]";
         assert_eq!(
-            Ok(("", vec![Element::ProductList(ProductList(vec![1]))])),
+            Ok((
+                "",
+                vec![Element::ProductList {
+                    products: vec![Product { id: 1 }]
+                }]
+            )),
             parse(input)
         );
     }
@@ -65,11 +74,15 @@ mod tests {
             Ok((
                 "",
                 vec![
-                    Element::Text("The "),
-                    Element::ProductList(ProductList(vec![1])),
-                    Element::Text(" quick "),
-                    Element::ProductList(ProductList(vec![1, 2])),
-                    Element::Text(" brown")
+                    Element::Text("The ".into()),
+                    Element::ProductList {
+                        products: vec![Product { id: 1 }]
+                    },
+                    Element::Text(" quick ".into()),
+                    Element::ProductList {
+                        products: vec![Product { id: 1 }, Product { id: 2 }]
+                    },
+                    Element::Text(" brown".into())
                 ]
             )),
             parse(input)
