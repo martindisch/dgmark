@@ -1,19 +1,15 @@
 use nom::{branch::alt, multi::many0, IResult};
-use serde::{Deserialize, Serialize};
 
 mod common;
 mod productlist;
 mod text;
 
-pub use productlist::Product;
+pub use productlist::ProductList;
 
 /// Enum of all elements of a markdown text.
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum Element {
-    ProductList {
-        #[serde(rename = "Product")]
-        products: Vec<Product>,
-    },
+    ProductList(ProductList),
     Text(String),
 }
 
@@ -28,10 +24,10 @@ fn parse_text(input: &str) -> IResult<&str, Element> {
     Ok((input, Element::Text(text.into())))
 }
 
-/// Parses a product list and wraps it in an `Element` variant.
+/// Parses a `ProductList` and wraps it in an `Element` variant.
 fn parse_productlist(input: &str) -> IResult<&str, Element> {
-    let (input, products) = productlist::parse(input)?;
-    Ok((input, Element::ProductList { products }))
+    let (input, productlist) = productlist::parse(input)?;
+    Ok((input, Element::ProductList(productlist)))
 }
 
 #[cfg(test)]
@@ -57,12 +53,7 @@ mod tests {
     fn just_productlist() {
         let input = "[[productlist:1]]";
         assert_eq!(
-            Ok((
-                "",
-                vec![Element::ProductList {
-                    products: vec![Product { id: 1 }]
-                }]
-            )),
+            Ok(("", vec![Element::ProductList(ProductList(vec![1]))])),
             parse(input)
         );
     }
@@ -75,13 +66,9 @@ mod tests {
                 "",
                 vec![
                     Element::Text("The ".into()),
-                    Element::ProductList {
-                        products: vec![Product { id: 1 }]
-                    },
+                    Element::ProductList(ProductList(vec![1])),
                     Element::Text(" quick ".into()),
-                    Element::ProductList {
-                        products: vec![Product { id: 1 }, Product { id: 2 }]
-                    },
+                    Element::ProductList(ProductList(vec![1, 2])),
                     Element::Text(" brown".into())
                 ]
             )),

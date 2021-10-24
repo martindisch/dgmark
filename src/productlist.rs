@@ -4,25 +4,22 @@ use nom::{
     sequence::{delimited, tuple},
     IResult,
 };
-use serde::{Deserialize, Serialize};
 
 use crate::common::*;
 
-/// A single product.
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
-pub struct Product {
-    pub id: u64,
-}
+/// A list of products.
+#[derive(Debug, PartialEq, Eq)]
+pub struct ProductList(pub Vec<u64>);
 
-/// Parses a product list into a `Vec` of `Product`.
-pub fn parse(input: &str) -> IResult<&str, Vec<Product>> {
+/// Parses a `ProductList`.
+pub fn parse(input: &str) -> IResult<&str, ProductList> {
     let (input, (_element_name, _whitespace, ids)) = delimited(
         tag("[["),
         tuple((element_name, colon_with_whitespace, ids)),
         tag("]]"),
     )(input)?;
 
-    Ok((input, ids.into_iter().map(|id| Product { id }).collect()))
+    Ok((input, ProductList(ids)))
 }
 
 /// Matches the product list's tag, discarding it.
@@ -37,22 +34,12 @@ mod tests {
     #[test]
     fn full_tag() {
         let input = "[[productlist: 1|20|31]]";
-        assert_eq!(
-            Ok((
-                "",
-                vec![
-                    Product { id: 1 },
-                    Product { id: 20 },
-                    Product { id: 31 }
-                ]
-            )),
-            parse(input)
-        );
+        assert_eq!(Ok(("", ProductList(vec![1, 20, 31]))), parse(input));
     }
 
     #[test]
     fn simple_tag() {
         let input = "[[productlist:1]]";
-        assert_eq!(Ok(("", vec![Product { id: 1 }])), parse(input));
+        assert_eq!(Ok(("", ProductList(vec![1]))), parse(input));
     }
 }
