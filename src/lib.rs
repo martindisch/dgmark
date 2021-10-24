@@ -3,9 +3,11 @@ use serde::{Deserialize, Serialize};
 
 mod common;
 mod productlist;
+mod quote;
 mod text;
 
 pub use productlist::Product;
+pub use quote::Quote;
 
 /// Enum of all elements of a markdown text.
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -14,12 +16,13 @@ pub enum Element {
         #[serde(rename = "Product")]
         products: Vec<Product>,
     },
+    Quote(Quote),
     Text(String),
 }
 
 /// Parses a full markdown text into its list of elements.
 pub fn parse(input: &str) -> IResult<&str, Vec<Element>> {
-    many0(alt((parse_productlist, parse_text)))(input)
+    many0(alt((parse_productlist, parse_quote, parse_text)))(input)
 }
 
 /// Parses text and wraps it in an `Element` variant.
@@ -32,6 +35,12 @@ fn parse_text(input: &str) -> IResult<&str, Element> {
 fn parse_productlist(input: &str) -> IResult<&str, Element> {
     let (input, products) = productlist::parse(input)?;
     Ok((input, Element::ProductList { products }))
+}
+
+/// Parses a quote and wraps it in an `Element` variant.
+fn parse_quote(input: &str) -> IResult<&str, Element> {
+    let (input, quote) = quote::parse(input)?;
+    Ok((input, Element::Quote(quote)))
 }
 
 #[cfg(test)]
