@@ -25,12 +25,6 @@ pub fn parse(input: &str) -> IResult<&str, Vec<Element>> {
     many0(alt((parse_productlist, parse_quote, parse_text)))(input)
 }
 
-/// Parses text and wraps it in an `Element` variant.
-fn parse_text(input: &str) -> IResult<&str, Element> {
-    let (input, text) = text::parse(input)?;
-    Ok((input, Element::Text(text.into())))
-}
-
 /// Parses a product list and wraps it in an `Element` variant.
 fn parse_productlist(input: &str) -> IResult<&str, Element> {
     let (input, products) = productlist::parse(input)?;
@@ -41,6 +35,12 @@ fn parse_productlist(input: &str) -> IResult<&str, Element> {
 fn parse_quote(input: &str) -> IResult<&str, Element> {
     let (input, quote) = quote::parse(input)?;
     Ok((input, Element::Quote(quote)))
+}
+
+/// Parses text and wraps it in an `Element` variant.
+fn parse_text(input: &str) -> IResult<&str, Element> {
+    let (input, text) = text::parse(input)?;
+    Ok((input, Element::Text(text.into())))
 }
 
 #[cfg(test)]
