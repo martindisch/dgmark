@@ -7,7 +7,7 @@ mod quote;
 mod text;
 
 pub use productlist::Product;
-pub use quote::Quote;
+pub use quote::{QuoteSource, QuoteText};
 
 /// Enum of all elements of a markdown text.
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -16,7 +16,12 @@ pub enum Element {
         #[serde(rename = "Product")]
         products: Vec<Product>,
     },
-    Quote(Quote),
+    Quote {
+        #[serde(rename = "QuoteText")]
+        text: QuoteText,
+        #[serde(rename = "QuoteSource")]
+        source: QuoteSource,
+    },
     Text(String),
 }
 
@@ -33,8 +38,8 @@ fn parse_productlist(input: &str) -> IResult<&str, Element> {
 
 /// Parses a quote and wraps it in an `Element` variant.
 fn parse_quote(input: &str) -> IResult<&str, Element> {
-    let (input, quote) = quote::parse(input)?;
-    Ok((input, Element::Quote(quote)))
+    let (input, (text, source)) = quote::parse(input)?;
+    Ok((input, Element::Quote { text, source }))
 }
 
 /// Parses text and wraps it in an `Element` variant.

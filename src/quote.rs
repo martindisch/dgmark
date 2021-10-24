@@ -9,15 +9,16 @@ use serde::{Deserialize, Serialize};
 
 use crate::common::*;
 
-/// A quote with source.
+/// A quote's text.
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
-pub struct Quote {
-    pub text: String,
-    pub source: String,
-}
+pub struct QuoteText(pub String);
+
+/// A quote's source.
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
+pub struct QuoteSource(pub String);
 
 /// Parses a `Quote`.
-pub fn parse(input: &str) -> IResult<&str, Quote> {
+pub fn parse(input: &str) -> IResult<&str, (QuoteText, QuoteSource)> {
     let (input, (_element_name, _whitespace, text, source)) = delimited(
         tag("[["),
         tuple((
@@ -29,13 +30,7 @@ pub fn parse(input: &str) -> IResult<&str, Quote> {
         tag("]]"),
     )(input)?;
 
-    Ok((
-        input,
-        Quote {
-            text: text.into(),
-            source: source.into(),
-        },
-    ))
+    Ok((input, (QuoteText(text.into()), QuoteSource(source.into()))))
 }
 
 /// Parses the text of a quote.
@@ -63,10 +58,10 @@ mod tests {
         assert_eq!(
             Ok((
                 "",
-                Quote {
-                    text: "here's some text".into(),
-                    source: "And a source too".into()
-                }
+                (
+                    QuoteText("here's some text".into()),
+                    QuoteSource("And a source too".into()),
+                )
             )),
             parse(input)
         );
