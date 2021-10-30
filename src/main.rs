@@ -1,10 +1,21 @@
 use dgmark::Element;
 use serde::{Deserialize, Serialize};
+use std::fmt;
 
 #[derive(Debug, Serialize, Deserialize)]
 struct Container {
     #[serde(rename = "$value")]
     elements: Vec<Element>,
+}
+
+impl fmt::Display for Container {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        for element in &self.elements {
+            element.fmt(f)?;
+        }
+
+        Ok(())
+    }
 }
 
 fn main() {
@@ -20,4 +31,8 @@ fn main() {
     let deserialized: Container =
         quick_xml::de::from_str(&serialized).unwrap();
     println!("{:?}", deserialized);
+
+    let formatted = deserialized.to_string();
+    assert_eq!(input, formatted);
+    println!("{}", formatted);
 }

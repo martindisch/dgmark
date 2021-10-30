@@ -1,5 +1,6 @@
 use nom::{branch::alt, multi::many0, IResult};
 use serde::{Deserialize, Serialize};
+use std::fmt;
 
 mod common;
 mod productlist;
@@ -46,6 +47,26 @@ fn parse_quote(input: &str) -> IResult<&str, Element> {
 fn parse_text(input: &str) -> IResult<&str, Element> {
     let (input, text) = text::parse(input)?;
     Ok((input, Element::Text(text.into())))
+}
+
+impl fmt::Display for Element {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Element::ProductList { products } => {
+                let ids = products
+                    .iter()
+                    .map(|p| p.id.to_string())
+                    .collect::<Vec<String>>()
+                    .join("|");
+                write!(f, "[[productlist:{}]]", ids)
+            }
+            Element::Quote {
+                text: QuoteText(text),
+                source: QuoteSource(source),
+            } => write!(f, r#"[[quote:{}"{}"]]"#, text, source),
+            Element::Text(text) => write!(f, "{}", text),
+        }
+    }
 }
 
 #[cfg(test)]
@@ -101,5 +122,29 @@ mod tests {
             )),
             parse(input)
         );
+    }
+
+    #[test]
+    fn format_quote() {
+        let element = Element::Quote {
+            text: QuoteText("The text".into()),
+            source: QuoteSource("The source".into()),
+        };
+        assert_eq!(r#"[[quote:The text"The source"]]"#, element.to_string());
+    }
+
+    #[test]
+    fn format_productlist() {
+        let element = Element::ProductList {
+            products: vec![Product { id: 1 }, Product { id: 12 }],
+        };
+
+        assert_eq!("[[productlist:1|12]]", element.to_string());
+    }
+
+    #[test]
+    fn format_text() {
+        let element = Element::Text("Hello, world!".into());
+        assert_eq!("Hello, world!", element.to_string());
     }
 }
