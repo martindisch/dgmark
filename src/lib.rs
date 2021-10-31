@@ -11,10 +11,10 @@ pub use quote::Quote;
 
 /// Enum of all elements of a markdown text.
 #[derive(Debug, PartialEq, Eq)]
-pub enum Element {
+pub enum Element<'a> {
     ProductList(ProductList),
-    Quote(Quote),
-    Text(String),
+    Quote(Quote<'a>),
+    Text(&'a str),
 }
 
 /// Parses a full markdown text into its list of elements.
@@ -37,10 +37,10 @@ fn parse_quote(input: &str) -> IResult<&str, Element> {
 /// Parses text and wraps it in an `Element` variant.
 fn parse_text(input: &str) -> IResult<&str, Element> {
     let (input, text) = text::parse(input)?;
-    Ok((input, Element::Text(text.into())))
+    Ok((input, Element::Text(text)))
 }
 
-impl fmt::Display for Element {
+impl fmt::Display for Element<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Element::ProductList(productlist) => {
@@ -74,7 +74,7 @@ mod tests {
     fn just_text() {
         let input = "The quick brown fox";
         assert_eq!(
-            Ok(("", vec![Element::Text("The quick brown fox".into())])),
+            Ok(("", vec![Element::Text("The quick brown fox")])),
             parse(input)
         );
     }
@@ -95,11 +95,11 @@ mod tests {
             Ok((
                 "",
                 vec![
-                    Element::Text("The ".into()),
+                    Element::Text("The "),
                     Element::ProductList(ProductList(vec![1])),
-                    Element::Text(" quick ".into()),
+                    Element::Text(" quick "),
                     Element::ProductList(ProductList(vec![1, 2])),
-                    Element::Text(" brown".into())
+                    Element::Text(" brown")
                 ]
             )),
             parse(input)
@@ -109,8 +109,8 @@ mod tests {
     #[test]
     fn format_quote() {
         let element = Element::Quote(Quote {
-            text: "The text".into(),
-            source: "The source".into(),
+            text: "The text",
+            source: "The source",
         });
         assert_eq!(r#"[[quote:The text"The source"]]"#, element.to_string());
     }
@@ -124,7 +124,7 @@ mod tests {
 
     #[test]
     fn format_text() {
-        let element = Element::Text("Hello, world!".into());
+        let element = Element::Text("Hello, world!");
         assert_eq!("Hello, world!", element.to_string());
     }
 }

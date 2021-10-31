@@ -10,9 +10,9 @@ use crate::common::*;
 
 /// A quoted text with source.
 #[derive(Debug, PartialEq, Eq)]
-pub struct Quote {
-    pub text: String,
-    pub source: String,
+pub struct Quote<'a> {
+    pub text: &'a str,
+    pub source: &'a str,
 }
 
 /// Parses a quote.
@@ -28,13 +28,7 @@ pub fn parse(input: &str) -> IResult<&str, Quote> {
         tag("]]"),
     )(input)?;
 
-    Ok((
-        input,
-        Quote {
-            text: text.into(),
-            source: source.into(),
-        },
-    ))
+    Ok((input, Quote { text, source }))
 }
 
 /// Parses the text of a quote.
@@ -63,8 +57,8 @@ mod tests {
             Ok((
                 "",
                 Quote {
-                    text: "here's some text".into(),
-                    source: "And a source too".into(),
+                    text: "here's some text",
+                    source: "And a source too",
                 }
             )),
             parse(input)
