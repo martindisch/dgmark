@@ -7,7 +7,7 @@ use nom::{
 };
 use std::fmt;
 
-use crate::common::*;
+use crate::{common::*, traits::Element};
 
 /// A quoted text with source.
 #[derive(Debug, PartialEq, Eq)]
@@ -52,6 +52,8 @@ impl fmt::Display for Quote<'_> {
         write!(f, r#"[[quote:{}"{}"]]"#, self.text, self.source)
     }
 }
+
+impl Element for Quote<'_> {}
 
 #[cfg(test)]
 mod tests {

@@ -1,53 +1,38 @@
 use nom::{branch::alt, multi::many0, IResult};
-use std::fmt;
 
 mod common;
 mod productlist;
 mod quote;
 mod text;
+mod traits;
 
 pub use productlist::ProductList;
 pub use quote::Quote;
-
-/// Enum of all elements of a markdown text.
-#[derive(Debug, PartialEq, Eq)]
-pub enum Element<'a> {
-    ProductList(ProductList),
-    Quote(Quote<'a>),
-    Text(&'a str),
-}
+pub use traits::Element;
 
 /// Parses a full markdown text into its list of elements.
-pub fn parse(input: &str) -> IResult<&str, Vec<Element>> {
+pub fn parse<'a>(input: &'a str) -> IResult<&str, Vec<Box<dyn Element + 'a>>> {
     many0(alt((parse_productlist, parse_quote, parse_text)))(input)
 }
 
-/// Parses a product list and wraps it in an `Element` variant.
-fn parse_productlist(input: &str) -> IResult<&str, Element> {
+/// Parses a product list and wraps it in an `Element` box.
+fn parse_productlist<'a>(
+    input: &'a str,
+) -> IResult<&str, Box<dyn Element + 'a>> {
     let (input, productlist) = productlist::parse(input)?;
-    Ok((input, Element::ProductList(productlist)))
+    Ok((input, Box::new(productlist)))
 }
 
-/// Parses a quote and wraps it in an `Element` variant.
-fn parse_quote(input: &str) -> IResult<&str, Element> {
+/// Parses a quote and wraps it in an `Element` box.
+fn parse_quote<'a>(input: &'a str) -> IResult<&str, Box<dyn Element + 'a>> {
     let (input, quote) = quote::parse(input)?;
-    Ok((input, Element::Quote(quote)))
+    Ok((input, Box::new(quote)))
 }
 
-/// Parses text and wraps it in an `Element` variant.
-fn parse_text(input: &str) -> IResult<&str, Element> {
+/// Parses text and wraps it in an `Element` box.
+fn parse_text<'a>(input: &'a str) -> IResult<&str, Box<dyn Element + 'a>> {
     let (input, text) = text::parse(input)?;
-    Ok((input, Element::Text(text)))
-}
-
-impl fmt::Display for Element<'_> {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Element::ProductList(productlist) => write!(f, "{}", productlist),
-            Element::Quote(quote) => write!(f, "{}", quote),
-            Element::Text(text) => write!(f, "{}", text),
-        }
-    }
+    Ok((input, Box::new(text)))
 }
 
 #[cfg(test)]
@@ -57,42 +42,32 @@ mod tests {
     #[test]
     fn no_elements() {
         let input = "";
-        assert_eq!(Ok(("", vec![])), parse(input));
+        let (_, parsed) = parse(input).unwrap();
+
+        assert_eq!(0, parsed.len());
     }
 
     #[test]
     fn just_text() {
         let input = "The quick brown fox";
-        assert_eq!(
-            Ok(("", vec![Element::Text("The quick brown fox")])),
-            parse(input)
-        );
+        let (_, parsed) = parse(input).unwrap();
+
+        assert_eq!(1, parsed.len());
     }
 
     #[test]
     fn just_productlist() {
         let input = "[[productlist:1]]";
-        assert_eq!(
-            Ok(("", vec![Element::ProductList(ProductList(vec![1]))])),
-            parse(input)
-        );
+        let (_, parsed) = parse(input).unwrap();
+
+        assert_eq!(1, parsed.len());
     }
 
     #[test]
     fn texts_and_productlists() {
         let input = "The [[productlist:1]] quick [[productlist:1|2]] brown";
-        assert_eq!(
-            Ok((
-                "",
-                vec![
-                    Element::Text("The "),
-                    Element::ProductList(ProductList(vec![1])),
-                    Element::Text(" quick "),
-                    Element::ProductList(ProductList(vec![1, 2])),
-                    Element::Text(" brown")
-                ]
-            )),
-            parse(input)
-        );
+        let (_, parsed) = parse(input).unwrap();
+
+        assert_eq!(5, parsed.len());
     }
 }

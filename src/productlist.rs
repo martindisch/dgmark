@@ -6,7 +6,7 @@ use nom::{
 };
 use std::fmt;
 
-use crate::common::*;
+use crate::{common::*, traits::Element};
 
 /// A product list.
 #[derive(Debug, PartialEq, Eq)]
@@ -39,6 +39,8 @@ impl fmt::Display for ProductList {
         write!(f, "[[productlist:{}]]", ids)
     }
 }
+
+impl Element for ProductList {}
 
 #[cfg(test)]
 mod tests {
