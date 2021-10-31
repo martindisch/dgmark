@@ -20,7 +20,7 @@ pub fn texts(input: &str) -> Vec<&str> {
     }
 }
 
-/// Parses a full markdown text into its list of elements.
+/// Parses markdown into its list of elements.
 pub fn parse<'a>(input: &'a str) -> IResult<&str, Vec<Box<dyn Element + 'a>>> {
     many0(alt((parse_productlist, parse_quote, parse_text)))(input)
 }
