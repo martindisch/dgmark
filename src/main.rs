@@ -4,6 +4,9 @@ fn main() {
     let (_, parsed) = dgmark::parse(input).unwrap();
     println!("{:?}", parsed);
 
+    let texts = dgmark::texts(input);
+    println!("{:#?}", texts);
+
     let formatted = parsed
         .into_iter()
         .map(|e| e.to_string())

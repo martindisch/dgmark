@@ -10,6 +10,16 @@ pub use productlist::ProductList;
 pub use quote::Quote;
 pub use traits::Element;
 
+/// Parses markdown and returns the list of translatable texts.
+pub fn texts(input: &str) -> Vec<&str> {
+    match parse(input) {
+        Ok(("", elements)) => {
+            elements.into_iter().flat_map(|e| e.texts()).collect()
+        }
+        _ => vec![],
+    }
+}
+
 /// Parses a full markdown text into its list of elements.
 pub fn parse<'a>(input: &'a str) -> IResult<&str, Vec<Box<dyn Element + 'a>>> {
     many0(alt((parse_productlist, parse_quote, parse_text)))(input)

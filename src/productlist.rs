@@ -40,8 +40,8 @@ impl fmt::Display for ProductList {
     }
 }
 
-impl Element for ProductList {
-    fn texts(&self) -> Vec<&str> {
+impl<'a> Element<'a> for ProductList {
+    fn texts(&self) -> Vec<&'a str> {
         vec![]
     }
 }

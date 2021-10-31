@@ -53,8 +53,8 @@ impl fmt::Display for Quote<'_> {
     }
 }
 
-impl Element for Quote<'_> {
-    fn texts(&self) -> Vec<&str> {
+impl<'a> Element<'a> for Quote<'a> {
+    fn texts(&self) -> Vec<&'a str> {
         vec![self.text, self.source]
     }
 }

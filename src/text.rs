@@ -37,8 +37,8 @@ where
     }
 }
 
-impl Element for &str {
-    fn texts(&self) -> Vec<&str> {
+impl<'a> Element<'a> for &'a str {
+    fn texts(&self) -> Vec<&'a str> {
         vec![self]
     }
 }
