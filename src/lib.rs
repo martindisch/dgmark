@@ -1,4 +1,6 @@
+use js_sys::Array;
 use nom::{branch::alt, multi::many0, IResult};
+use wasm_bindgen::prelude::*;
 
 mod common;
 mod productlist;
@@ -11,12 +13,21 @@ pub use quote::Quote;
 pub use traits::Element;
 
 /// Parses markdown and returns the list of translatable texts.
-pub fn texts(input: &str) -> Vec<&str> {
+#[wasm_bindgen]
+pub fn texts(input: &str) -> Array {
     match parse(input) {
         Ok(("", elements)) => {
-            elements.into_iter().flat_map(|e| e.texts()).collect()
+            let array = Array::new();
+            elements
+                .into_iter()
+                .flat_map(|e| e.texts())
+                .map(JsValue::from_str)
+                .for_each(|v| {
+                    array.push(&v);
+                });
+            array
         }
-        _ => vec![],
+        _ => Array::new(),
     }
 }
 
