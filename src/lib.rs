@@ -6,19 +6,14 @@ mod productlist;
 mod quote;
 mod text;
 
-pub use productlist::Product;
-pub use quote::{QuoteSource, QuoteText};
+pub use productlist::ProductList;
+pub use quote::Quote;
 
 /// Enum of all elements of a markdown text.
 #[derive(Debug, PartialEq, Eq)]
 pub enum Element {
-    ProductList {
-        products: Vec<Product>,
-    },
-    Quote {
-        text: QuoteText,
-        source: QuoteSource,
-    },
+    ProductList(ProductList),
+    Quote(Quote),
     Text(String),
 }
 
@@ -29,14 +24,14 @@ pub fn parse(input: &str) -> IResult<&str, Vec<Element>> {
 
 /// Parses a product list and wraps it in an `Element` variant.
 fn parse_productlist(input: &str) -> IResult<&str, Element> {
-    let (input, products) = productlist::parse(input)?;
-    Ok((input, Element::ProductList { products }))
+    let (input, productlist) = productlist::parse(input)?;
+    Ok((input, Element::ProductList(productlist)))
 }
 
 /// Parses a quote and wraps it in an `Element` variant.
 fn parse_quote(input: &str) -> IResult<&str, Element> {
-    let (input, (text, source)) = quote::parse(input)?;
-    Ok((input, Element::Quote { text, source }))
+    let (input, quote) = quote::parse(input)?;
+    Ok((input, Element::Quote(quote)))
 }
 
 /// Parses text and wraps it in an `Element` variant.
@@ -48,18 +43,18 @@ fn parse_text(input: &str) -> IResult<&str, Element> {
 impl fmt::Display for Element {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Element::ProductList { products } => {
-                let ids = products
+            Element::ProductList(productlist) => {
+                let ids = productlist
+                    .0
                     .iter()
-                    .map(|p| p.id.to_string())
+                    .map(ToString::to_string)
                     .collect::<Vec<String>>()
                     .join("|");
                 write!(f, "[[productlist:{}]]", ids)
             }
-            Element::Quote {
-                text: QuoteText(text),
-                source: QuoteSource(source),
-            } => write!(f, r#"[[quote:{}"{}"]]"#, text, source),
+            Element::Quote(Quote { text, source }) => {
+                write!(f, r#"[[quote:{}"{}"]]"#, text, source)
+            }
             Element::Text(text) => write!(f, "{}", text),
         }
     }
@@ -88,12 +83,7 @@ mod tests {
     fn just_productlist() {
         let input = "[[productlist:1]]";
         assert_eq!(
-            Ok((
-                "",
-                vec![Element::ProductList {
-                    products: vec![Product { id: 1 }]
-                }]
-            )),
+            Ok(("", vec![Element::ProductList(ProductList(vec![1]))])),
             parse(input)
         );
     }
@@ -106,13 +96,9 @@ mod tests {
                 "",
                 vec![
                     Element::Text("The ".into()),
-                    Element::ProductList {
-                        products: vec![Product { id: 1 }]
-                    },
+                    Element::ProductList(ProductList(vec![1])),
                     Element::Text(" quick ".into()),
-                    Element::ProductList {
-                        products: vec![Product { id: 1 }, Product { id: 2 }]
-                    },
+                    Element::ProductList(ProductList(vec![1, 2])),
                     Element::Text(" brown".into())
                 ]
             )),
@@ -122,18 +108,16 @@ mod tests {
 
     #[test]
     fn format_quote() {
-        let element = Element::Quote {
-            text: QuoteText("The text".into()),
-            source: QuoteSource("The source".into()),
-        };
+        let element = Element::Quote(Quote {
+            text: "The text".into(),
+            source: "The source".into(),
+        });
         assert_eq!(r#"[[quote:The text"The source"]]"#, element.to_string());
     }
 
     #[test]
     fn format_productlist() {
-        let element = Element::ProductList {
-            products: vec![Product { id: 1 }, Product { id: 12 }],
-        };
+        let element = Element::ProductList(ProductList(vec![1, 12]));
 
         assert_eq!("[[productlist:1|12]]", element.to_string());
     }

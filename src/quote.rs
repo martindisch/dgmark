@@ -8,16 +8,15 @@ use nom::{
 
 use crate::common::*;
 
-/// A quote's text.
+/// A quoted text with source.
 #[derive(Debug, PartialEq, Eq)]
-pub struct QuoteText(pub String);
+pub struct Quote {
+    pub text: String,
+    pub source: String,
+}
 
-/// A quote's source.
-#[derive(Debug, PartialEq, Eq)]
-pub struct QuoteSource(pub String);
-
-/// Parses a `Quote`.
-pub fn parse(input: &str) -> IResult<&str, (QuoteText, QuoteSource)> {
+/// Parses a quote.
+pub fn parse(input: &str) -> IResult<&str, Quote> {
     let (input, (_element_name, _whitespace, text, source)) = delimited(
         tag("[["),
         tuple((
@@ -29,7 +28,13 @@ pub fn parse(input: &str) -> IResult<&str, (QuoteText, QuoteSource)> {
         tag("]]"),
     )(input)?;
 
-    Ok((input, (QuoteText(text.into()), QuoteSource(source.into()))))
+    Ok((
+        input,
+        Quote {
+            text: text.into(),
+            source: source.into(),
+        },
+    ))
 }
 
 /// Parses the text of a quote.
@@ -57,10 +62,10 @@ mod tests {
         assert_eq!(
             Ok((
                 "",
-                (
-                    QuoteText("here's some text".into()),
-                    QuoteSource("And a source too".into()),
-                )
+                Quote {
+                    text: "here's some text".into(),
+                    source: "And a source too".into(),
+                }
             )),
             parse(input)
         );

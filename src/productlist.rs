@@ -7,21 +7,19 @@ use nom::{
 
 use crate::common::*;
 
-/// A single product.
+/// A product list.
 #[derive(Debug, PartialEq, Eq)]
-pub struct Product {
-    pub id: u64,
-}
+pub struct ProductList(pub Vec<u64>);
 
-/// Parses a product list into a `Vec` of `Product`.
-pub fn parse(input: &str) -> IResult<&str, Vec<Product>> {
+/// Parses a product list.
+pub fn parse(input: &str) -> IResult<&str, ProductList> {
     let (input, (_element_name, _whitespace, ids)) = delimited(
         tag("[["),
         tuple((element_name, colon_with_whitespace, ids)),
         tag("]]"),
     )(input)?;
 
-    Ok((input, ids.into_iter().map(|id| Product { id }).collect()))
+    Ok((input, ProductList(ids)))
 }
 
 /// Matches the product list's tag, discarding it.
@@ -36,22 +34,12 @@ mod tests {
     #[test]
     fn full_tag() {
         let input = "[[productlist: 1|20|31]]";
-        assert_eq!(
-            Ok((
-                "",
-                vec![
-                    Product { id: 1 },
-                    Product { id: 20 },
-                    Product { id: 31 }
-                ]
-            )),
-            parse(input)
-        );
+        assert_eq!(Ok(("", ProductList(vec![1, 20, 31]))), parse(input));
     }
 
     #[test]
     fn simple_tag() {
         let input = "[[productlist:1]]";
-        assert_eq!(Ok(("", vec![Product { id: 1 }])), parse(input));
+        assert_eq!(Ok(("", ProductList(vec![1]))), parse(input));
     }
 }
