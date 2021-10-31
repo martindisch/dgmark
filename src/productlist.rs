@@ -40,7 +40,11 @@ impl fmt::Display for ProductList {
     }
 }
 
-impl Element for ProductList {}
+impl Element for ProductList {
+    fn texts(&self) -> Vec<&str> {
+        vec![]
+    }
+}
 
 #[cfg(test)]
 mod tests {

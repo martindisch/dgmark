@@ -37,7 +37,11 @@ where
     }
 }
 
-impl Element for &str {}
+impl Element for &str {
+    fn texts(&self) -> Vec<&str> {
+        vec![self]
+    }
+}
 
 #[cfg(test)]
 mod tests {

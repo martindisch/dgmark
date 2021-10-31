@@ -53,7 +53,11 @@ impl fmt::Display for Quote<'_> {
     }
 }
 
-impl Element for Quote<'_> {}
+impl Element for Quote<'_> {
+    fn texts(&self) -> Vec<&str> {
+        vec![self.text, self.source]
+    }
+}
 
 #[cfg(test)]
 mod tests {
