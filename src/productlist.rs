@@ -4,12 +4,11 @@ use nom::{
     sequence::{delimited, tuple},
     IResult,
 };
-use serde::{Deserialize, Serialize};
 
 use crate::common::*;
 
 /// A single product.
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct Product {
     pub id: u64,
 }

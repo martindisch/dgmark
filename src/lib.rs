@@ -1,5 +1,4 @@
 use nom::{branch::alt, multi::many0, IResult};
-use serde::{Deserialize, Serialize};
 use std::fmt;
 
 mod common;
@@ -11,16 +10,13 @@ pub use productlist::Product;
 pub use quote::{QuoteSource, QuoteText};
 
 /// Enum of all elements of a markdown text.
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum Element {
     ProductList {
-        #[serde(rename = "Product")]
         products: Vec<Product>,
     },
     Quote {
-        #[serde(rename = "QuoteText")]
         text: QuoteText,
-        #[serde(rename = "QuoteSource")]
         source: QuoteSource,
     },
     Text(String),

@@ -5,16 +5,15 @@ use nom::{
     sequence::{delimited, tuple},
     IResult,
 };
-use serde::{Deserialize, Serialize};
 
 use crate::common::*;
 
 /// A quote's text.
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct QuoteText(pub String);
 
 /// A quote's source.
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct QuoteSource(pub String);
 
 /// Parses a `Quote`.
