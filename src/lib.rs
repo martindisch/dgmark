@@ -12,6 +12,10 @@ pub use productlist::ProductList;
 pub use quote::Quote;
 pub use traits::Element;
 
+#[cfg(feature = "wee_alloc")]
+#[global_allocator]
+static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
+
 /// Parses markdown and returns the list of translatable texts.
 #[wasm_bindgen]
 pub fn texts(input: &str) -> Array {
