@@ -43,18 +43,8 @@ fn parse_text(input: &str) -> IResult<&str, Element> {
 impl fmt::Display for Element<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Element::ProductList(productlist) => {
-                let ids = productlist
-                    .0
-                    .iter()
-                    .map(ToString::to_string)
-                    .collect::<Vec<String>>()
-                    .join("|");
-                write!(f, "[[productlist:{}]]", ids)
-            }
-            Element::Quote(Quote { text, source }) => {
-                write!(f, r#"[[quote:{}"{}"]]"#, text, source)
-            }
+            Element::ProductList(productlist) => write!(f, "{}", productlist),
+            Element::Quote(quote) => write!(f, "{}", quote),
             Element::Text(text) => write!(f, "{}", text),
         }
     }
@@ -104,27 +94,5 @@ mod tests {
             )),
             parse(input)
         );
-    }
-
-    #[test]
-    fn format_quote() {
-        let element = Element::Quote(Quote {
-            text: "The text",
-            source: "The source",
-        });
-        assert_eq!(r#"[[quote:The text"The source"]]"#, element.to_string());
-    }
-
-    #[test]
-    fn format_productlist() {
-        let element = Element::ProductList(ProductList(vec![1, 12]));
-
-        assert_eq!("[[productlist:1|12]]", element.to_string());
-    }
-
-    #[test]
-    fn format_text() {
-        let element = Element::Text("Hello, world!");
-        assert_eq!("Hello, world!", element.to_string());
     }
 }

@@ -5,6 +5,7 @@ use nom::{
     sequence::{delimited, tuple},
     IResult,
 };
+use std::fmt;
 
 use crate::common::*;
 
@@ -44,6 +45,12 @@ fn quote_source(input: &str) -> IResult<&str, &str> {
 /// Matches the quote's tag, discarding it.
 fn element_name(input: &str) -> IResult<&str, ()> {
     value((), tag_no_case("quote"))(input)
+}
+
+impl fmt::Display for Quote<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, r#"[[quote:{}"{}"]]"#, self.text, self.source)
+    }
 }
 
 #[cfg(test)]
@@ -90,5 +97,14 @@ mod tests {
 
         let input = r#"[[quote:textinvalid_source"]]"#;
         assert!(parse(input).is_err());
+    }
+
+    #[test]
+    fn format() {
+        let quote = Quote {
+            text: "The text",
+            source: "The source",
+        };
+        assert_eq!(r#"[[quote:The text"The source"]]"#, quote.to_string());
     }
 }

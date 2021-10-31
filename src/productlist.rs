@@ -4,6 +4,7 @@ use nom::{
     sequence::{delimited, tuple},
     IResult,
 };
+use std::fmt;
 
 use crate::common::*;
 
@@ -27,6 +28,18 @@ fn element_name(input: &str) -> IResult<&str, ()> {
     value((), tag_no_case("productlist"))(input)
 }
 
+impl fmt::Display for ProductList {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let ids = self
+            .0
+            .iter()
+            .map(ToString::to_string)
+            .collect::<Vec<String>>()
+            .join("|");
+        write!(f, "[[productlist:{}]]", ids)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -41,5 +54,11 @@ mod tests {
     fn simple_tag() {
         let input = "[[productlist:1]]";
         assert_eq!(Ok(("", ProductList(vec![1]))), parse(input));
+    }
+
+    #[test]
+    fn format() {
+        let productlist = ProductList(vec![1, 12]);
+        assert_eq!("[[productlist:1|12]]", productlist.to_string());
     }
 }
