@@ -186,6 +186,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "dgmark-ffi"
+version = "0.1.0"
+dependencies = [
+ "dgmark",
+]
+
+[[package]]
 name = "dgmark-wasm"
 version = "0.1.0"
 dependencies = [

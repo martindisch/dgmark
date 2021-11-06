@@ -1,5 +1,6 @@
 [workspace]
 members = [
     "dgmark",
-    "dgmark-wasm"
+    "dgmark-wasm",
+    "dgmark-ffi"
 ]
