@@ -1,18 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="x-ua-compatible" content="ie=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<head>
-    <meta charset="utf-8" />
-    <meta http-equiv="x-ua-compatible" content="ie=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>dgmark demo</title>
+        <link rel="stylesheet" href="main.css" />
+    </head>
 
-    <title>dgmark demo</title>
-    <link rel="stylesheet" href="css/main.css" />
-    <link rel="icon" href="images/favicon.png" />
-</head>
+    <body>
+        <script src="index.js"></script>
+        <div class="container">
+            <textarea class="input" rows="20" id="input">
+Hi there! Let's see a productlist:
+[[productlist: 1|2|20]]
 
-<body>
-    <script src="index.js"></script>
-</body>
+That went well. How about another one?
 
+[[productlist:20]]
+
+We can do quotes too.
+
+[[quote:This is supposed to be the quote"And this is the source"]]
+
+Pretty cool, right?
+            </textarea>
+            <button id="extract">Extract translatable texts</button>
+            <ul id="output"></ul>
+        </div>
+    </body>
 </html>
