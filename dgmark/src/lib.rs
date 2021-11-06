@@ -1,6 +1,4 @@
-use js_sys::Array;
 use nom::{branch::alt, multi::many0, IResult};
-use wasm_bindgen::prelude::*;
 
 mod common;
 mod productlist;
@@ -12,26 +10,13 @@ pub use productlist::ProductList;
 pub use quote::Quote;
 pub use traits::Element;
 
-#[cfg(feature = "wee_alloc")]
-#[global_allocator]
-static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
-
 /// Parses markdown and returns the list of translatable texts.
-#[wasm_bindgen]
-pub fn texts(input: &str) -> Array {
+pub fn texts(input: &str) -> Vec<&str> {
     match parse(input) {
         Ok(("", elements)) => {
-            let array = Array::new();
-            elements
-                .into_iter()
-                .flat_map(|e| e.texts())
-                .map(JsValue::from_str)
-                .for_each(|v| {
-                    array.push(&v);
-                });
-            array
+            elements.into_iter().flat_map(|e| e.texts()).collect()
         }
-        _ => Array::new(),
+        _ => vec![],
     }
 }
 

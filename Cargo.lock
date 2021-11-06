@@ -182,8 +182,15 @@ name = "dgmark"
 version = "0.1.0"
 dependencies = [
  "criterion",
- "js-sys",
  "nom",
+]
+
+[[package]]
+name = "dgmark-wasm"
+version = "0.1.0"
+dependencies = [
+ "dgmark",
+ "js-sys",
  "wasm-bindgen",
  "wee_alloc",
 ]
