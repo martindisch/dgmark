@@ -1,0 +1,28 @@
+{
+  "name": "dgmark-js",
+  "version": "0.1.0",
+  "description": "Small demo of dgmark in JS",
+  "main": "index.js",
+  "scripts": {
+    "build": "rimraf dist && webpack",
+    "start": "webpack serve",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/martindisch/dgmark.git"
+  },
+  "author": "Martin Disch <martindisch@gmail.com>",
+  "license": "(MIT OR Apache-2.0)",
+  "bugs": {
+    "url": "https://github.com/martindisch/dgmark/issues"
+  },
+  "homepage": "https://github.com/martindisch/dgmark#readme",
+  "devDependencies": {
+    "copy-webpack-plugin": "^9.0.1",
+    "rimraf": "^3.0.2",
+    "webpack": "^5.62.1",
+    "webpack-cli": "^4.9.1",
+    "webpack-dev-server": "^4.4.0"
+  }
+}
