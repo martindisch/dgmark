@@ -2,5 +2,6 @@
 members = [
     "dgmark",
     "dgmark-wasm",
+    "dgmark-wasmtime",
     "dgmark-ffi"
 ]
