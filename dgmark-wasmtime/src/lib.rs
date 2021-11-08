@@ -1,7 +1,5 @@
 use std::{
     alloc::{alloc, dealloc, Layout},
-    ffi::CString,
-    os::raw::c_char,
     slice, str,
 };
 
@@ -23,16 +21,16 @@ pub unsafe fn __dealloc(bytes: *mut u8, len: usize) {
 
 /// Struct holding both the string array pointer and its size.
 #[repr(C)]
-pub struct Texts {
-    pub texts: *const *mut c_char,
-    pub size: i32,
+pub struct ByteArray {
+    pub bytes: *const u8,
+    pub len: usize,
 }
 
 /// Parses markdown and returns the list of translatable texts.
 ///
 /// The caller is responsible for freeing the returned memory with `__dealloc`.
 #[no_mangle]
-pub fn texts(input: *const u8, len: usize) -> *const Texts {
+pub fn texts(input: *const u8, len: usize) -> *const ByteArray {
     let input =
         unsafe { str::from_utf8_unchecked(slice::from_raw_parts(input, len)) };
 
@@ -40,15 +38,19 @@ pub fn texts(input: *const u8, len: usize) -> *const Texts {
         Ok(("", elements)) => elements
             .into_iter()
             .flat_map(|e| e.texts())
-            .map(|s| CString::new(s).unwrap().into_raw())
+            .map(|t| {
+                Box::into_raw(Box::new(ByteArray {
+                    bytes: t.as_ptr(),
+                    len: t.len(),
+                }))
+            })
             .collect(),
         _ => vec![],
     };
-    let texts_pointer = texts_vec.as_ptr();
 
-    let texts = Box::new(Texts {
-        texts: texts_pointer,
-        size: texts_vec.len() as i32,
+    let texts = Box::new(ByteArray {
+        bytes: texts_vec.as_ptr() as *const u8,
+        len: texts_vec.len(),
     });
     let return_value = Box::into_raw(texts);
 

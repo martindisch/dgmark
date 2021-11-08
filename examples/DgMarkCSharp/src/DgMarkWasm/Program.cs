@@ -47,10 +47,13 @@ Pretty cool, right?";
             Console.WriteLine($"Pointer at {arrayPtr} of length {arrayLength}");
 
             var firstPointer = memory.ReadInt32(store, arrayPtr);
-            var lastPointer = memory.ReadInt32(store, arrayPtr + (arrayLength - 1) * 4);
+            var firstStringPointer = memory.ReadInt32(store, firstPointer);
+            var firstLen = memory.ReadInt32(store, firstPointer + 4);
+            Console.WriteLine($"{firstStringPointer}, {firstLen}");
+            var firstText = memory.ReadString(store, firstStringPointer, firstLen);
 
-            var firstText = memory.ReadNullTerminatedString(store, firstPointer);
-            var lastText = memory.ReadNullTerminatedString(store, lastPointer);
+            var lastPointer = memory.ReadInt32(store, arrayPtr + (arrayLength - 1) * 4);
+            var lastText = memory.ReadString(store, memory.ReadInt32(store, lastPointer), memory.ReadInt32(store, lastPointer + 4));
 
             Console.WriteLine($"{firstText}, {lastText}");
         }
