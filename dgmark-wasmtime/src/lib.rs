@@ -34,7 +34,7 @@ pub fn texts(input: *const u8, len: usize) -> *const Array {
     let input =
         unsafe { str::from_utf8_unchecked(slice::from_raw_parts(input, len)) };
 
-    let texts_vec = match dgmark::parse(input) {
+    let texts = match dgmark::parse(input) {
         Ok(("", elements)) => elements
             .into_iter()
             .flat_map(|e| e.texts())
@@ -48,14 +48,13 @@ pub fn texts(input: *const u8, len: usize) -> *const Array {
         _ => vec![],
     };
 
-    let texts = Box::new(Array {
-        offset: texts_vec.as_ptr() as usize,
-        len: texts_vec.len(),
-    });
-    let return_value = Box::into_raw(texts);
+    let texts_array = Box::into_raw(Box::new(Array {
+        offset: texts.as_ptr() as usize,
+        len: texts.len(),
+    }));
 
-    // Force leaking of the Vec, otherwise it will be freed
-    std::mem::forget(texts_vec);
+    // Force leaking of the Vec, otherwise it will be dropped
+    std::mem::forget(texts);
 
-    return_value
+    texts_array
 }
