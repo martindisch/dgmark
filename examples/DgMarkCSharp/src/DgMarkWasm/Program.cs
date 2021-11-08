@@ -25,7 +25,8 @@ Pretty cool, right?";
             using var linker = new Linker(engine);
             using var store = new Store(engine);
             using var module = Module.FromFile(
-                engine, "../../target/wasm32-unknown-unknown/release/dgmark_wasmtime.wasm");
+                engine,
+                "../../target/wasm32-unknown-unknown/release/dgmark_wasmtime.wasm");
             var instance = linker.Instantiate(store, module);
             var memory = instance.GetMemory(store, "memory");
 
@@ -34,12 +35,12 @@ Pretty cool, right?";
             var texts = instance.GetFunction(store, "texts");
 
             // Put input into WASM memory
-            var nullTerminatedInput = input + char.MinValue;
-            var utf8Input = Encoding.UTF8.GetBytes(nullTerminatedInput);
+            var utf8Input = Encoding.UTF8.GetBytes(input);
             var offset = (int)alloc.Invoke(store, utf8Input.Length);
-            var length = memory.WriteString(store, offset, input);
+            var allocatedSlice = memory.GetSpan(store).Slice(offset);
+            utf8Input.AsSpan<byte>().CopyTo(allocatedSlice);
 
-            var resultPointer = (int)texts.Invoke(store, offset);
+            var resultPointer = (int)texts.Invoke(store, offset, utf8Input.Length);
             var arrayPtr = memory.ReadInt32(store, resultPointer);
             var arrayLength = memory.ReadInt32(store, resultPointer + 4);
 

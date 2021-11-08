@@ -1,7 +1,8 @@
 use std::{
     alloc::{alloc, dealloc, Layout},
-    ffi::{CStr, CString},
+    ffi::CString,
     os::raw::c_char,
+    slice, str,
 };
 
 /// Allocates some memory in this address space.
@@ -31,11 +32,9 @@ pub struct Texts {
 ///
 /// The caller is responsible for freeing the returned memory with `__dealloc`.
 #[no_mangle]
-pub fn texts(input: *const c_char) -> *const Texts {
-    let input = unsafe {
-        assert!(!input.is_null());
-        CStr::from_ptr(input).to_str().unwrap()
-    };
+pub fn texts(input: *const u8, len: usize) -> *const Texts {
+    let input =
+        unsafe { str::from_utf8_unchecked(slice::from_raw_parts(input, len)) };
 
     let texts_vec = match dgmark::parse(input) {
         Ok(("", elements)) => elements
