@@ -207,7 +207,6 @@ name = "dgmark-wasmtime"
 version = "0.1.0"
 dependencies = [
  "dgmark",
- "wee_alloc",
 ]
 
 [[package]]

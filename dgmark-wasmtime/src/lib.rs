@@ -4,10 +4,6 @@ use std::{
     os::raw::c_char,
 };
 
-#[cfg(feature = "wee_alloc")]
-#[global_allocator]
-static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
-
 /// Allocates some memory in this address space.
 #[no_mangle]
 pub unsafe fn __alloc(len: usize) -> *mut u8 {
