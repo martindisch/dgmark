@@ -19,10 +19,10 @@ pub unsafe fn __dealloc(bytes: *mut u8, len: usize) {
     dealloc(bytes, layout);
 }
 
-/// Struct holding both the string array pointer and its size.
+/// Struct holding a starting address and length.
 #[repr(C)]
-pub struct ByteArray {
-    pub bytes: *const u8,
+pub struct Array {
+    pub offset: usize,
     pub len: usize,
 }
 
@@ -30,7 +30,7 @@ pub struct ByteArray {
 ///
 /// The caller is responsible for freeing the returned memory with `__dealloc`.
 #[no_mangle]
-pub fn texts(input: *const u8, len: usize) -> *const ByteArray {
+pub fn texts(input: *const u8, len: usize) -> *const Array {
     let input =
         unsafe { str::from_utf8_unchecked(slice::from_raw_parts(input, len)) };
 
@@ -39,8 +39,8 @@ pub fn texts(input: *const u8, len: usize) -> *const ByteArray {
             .into_iter()
             .flat_map(|e| e.texts())
             .map(|t| {
-                Box::into_raw(Box::new(ByteArray {
-                    bytes: t.as_ptr(),
+                Box::into_raw(Box::new(Array {
+                    offset: t.as_ptr() as usize,
                     len: t.len(),
                 }))
             })
@@ -48,8 +48,8 @@ pub fn texts(input: *const u8, len: usize) -> *const ByteArray {
         _ => vec![],
     };
 
-    let texts = Box::new(ByteArray {
-        bytes: texts_vec.as_ptr() as *const u8,
+    let texts = Box::new(Array {
+        offset: texts_vec.as_ptr() as usize,
         len: texts_vec.len(),
     });
     let return_value = Box::into_raw(texts);
