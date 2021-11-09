@@ -7,7 +7,7 @@ use std::{
 #[repr(C)]
 pub struct Texts {
     pub texts: *const *mut c_char,
-    pub size: i32,
+    pub len: i32,
 }
 
 /// Parses markdown and returns the list of translatable texts.
@@ -30,10 +30,10 @@ pub extern "C" fn texts(input: *const c_char) -> Texts {
 
     let texts = Texts {
         texts: texts_pointer,
-        size: texts_vec.len() as i32,
+        len: texts_vec.len() as i32,
     };
 
-    // Force leaking of the Vec, otherwise it will be freed
+    // Force leaking of the Vec, otherwise it will be dropped
     std::mem::forget(texts_vec);
 
     texts
