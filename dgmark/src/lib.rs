@@ -11,12 +11,13 @@ pub use quote::Quote;
 pub use traits::Element;
 
 /// Parses markdown and returns the list of translatable texts.
-pub fn texts(input: &str) -> Vec<&str> {
+pub fn texts(input: &str) -> Result<Vec<&str>, &str> {
     match parse(input) {
         Ok(("", elements)) => {
-            elements.into_iter().flat_map(|e| e.texts()).collect()
+            Ok(elements.into_iter().flat_map(|e| e.texts()).collect())
         }
-        _ => vec![],
+        Ok(_) => Err("Input could not be fully parsed"),
+        Err(_) => Err("Parser encountered an error"),
     }
 }
 
