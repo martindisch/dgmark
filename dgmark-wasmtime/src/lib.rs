@@ -34,19 +34,19 @@ pub fn texts(input: *const u8, len: usize) -> *const Array {
     let input =
         unsafe { str::from_utf8_unchecked(slice::from_raw_parts(input, len)) };
 
-    let texts = match dgmark::parse(input) {
-        Ok(("", elements)) => elements
-            .into_iter()
-            .flat_map(|e| e.texts())
-            .map(|t| {
-                Box::into_raw(Box::new(Array {
-                    offset: t.as_ptr() as usize,
-                    len: t.len(),
-                }))
-            })
-            .collect(),
-        _ => vec![],
-    };
+    let texts = dgmark::texts(input)
+        .map(|texts| {
+            texts
+                .into_iter()
+                .map(|t| {
+                    Box::into_raw(Box::new(Array {
+                        offset: t.as_ptr() as usize,
+                        len: t.len(),
+                    }))
+                })
+                .collect()
+        })
+        .unwrap_or_else(|_| vec![]);
 
     let texts_array = Box::into_raw(Box::new(Array {
         offset: texts.as_ptr() as usize,
