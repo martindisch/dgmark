@@ -18,14 +18,14 @@ pub extern "C" fn texts(input: *const c_char) -> Texts {
         CStr::from_ptr(input).to_str().unwrap()
     };
 
-    let texts_vec = match dgmark::parse(input) {
-        Ok(("", elements)) => elements
-            .into_iter()
-            .flat_map(|e| e.texts())
-            .map(|s| CString::new(s).unwrap().into_raw())
-            .collect(),
-        _ => vec![],
-    };
+    let texts_vec = dgmark::texts(input)
+        .map(|texts| {
+            texts
+                .into_iter()
+                .map(|s| CString::new(s).unwrap().into_raw())
+                .collect()
+        })
+        .unwrap_or_else(|_| vec![]);
     let texts_pointer = texts_vec.as_ptr();
 
     let texts = Texts {
