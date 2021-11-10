@@ -21,7 +21,7 @@ namespace DgMarkWasmExample
             linker = new Linker(engine);
         }
 
-        public IEnumerable<string> Texts(string input)
+        public IReadOnlyCollection<string> Texts(string input)
         {
             using var store = new Store(engine);
             var instance = linker.Instantiate(store, module);
@@ -42,7 +42,7 @@ namespace DgMarkWasmExample
             return ExtractTexts(memory, store, arrayDescriptorOffset);
         }
 
-        static IEnumerable<string> ExtractTexts(Memory memory, Store store, int arrayDescriptorOffset)
+        static IReadOnlyCollection<string> ExtractTexts(Memory memory, Store store, int arrayDescriptorOffset)
         {
             var arrayOffset = memory.ReadInt32(store, arrayDescriptorOffset);
             var arrayLength = memory.ReadInt32(store, arrayDescriptorOffset + 4);
@@ -57,7 +57,8 @@ namespace DgMarkWasmExample
                     var currentStringLength = memory.ReadInt32(store, currentArrayDescriptorOffset + 4);
 
                     return memory.ReadString(store, currentStringOffset, currentStringLength);
-                });
+                })
+                .ToList();
         }
 
         public void Dispose()

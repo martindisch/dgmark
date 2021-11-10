@@ -18,13 +18,14 @@ namespace DgMarkFfiExample
         [DllImport("../../target/release/libdgmark_ffi", CallingConvention = CallingConvention.Cdecl, EntryPoint = "texts")]
         static extern TextsDescriptor TextsFfi(string input);
 
-        unsafe public static IEnumerable<string> Texts(string input)
+        unsafe public static IReadOnlyCollection<string> Texts(string input)
         {
             var textsDescriptor = TextsFfi(input);
 
             return Enumerable
                 .Range(0, textsDescriptor.Size)
-                .Select(i => Marshal.PtrToStringUTF8(textsDescriptor.Texts[i]));
+                .Select(i => Marshal.PtrToStringUTF8(textsDescriptor.Texts[i]))
+                .ToList();
         }
     }
 }
