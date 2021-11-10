@@ -26,7 +26,7 @@ pub fn parse<'a>(input: &'a str) -> IResult<&str, Vec<Box<dyn Element + 'a>>> {
     many0(alt((parse_productlist, parse_quote, parse_text)))(input)
 }
 
-/// Parses a product list and wraps it in an `Element` box.
+/// Parses a product list and wraps it in an [`Element`] box.
 fn parse_productlist<'a>(
     input: &'a str,
 ) -> IResult<&str, Box<dyn Element + 'a>> {
@@ -34,13 +34,13 @@ fn parse_productlist<'a>(
     Ok((input, Box::new(productlist)))
 }
 
-/// Parses a quote and wraps it in an `Element` box.
+/// Parses a quote and wraps it in an [`Element`] box.
 fn parse_quote<'a>(input: &'a str) -> IResult<&str, Box<dyn Element + 'a>> {
     let (input, quote) = quote::parse(input)?;
     Ok((input, Box::new(quote)))
 }
 
-/// Parses text and wraps it in an `Element` box.
+/// Parses text and wraps it in an [`Element`] box.
 fn parse_text<'a>(input: &'a str) -> IResult<&str, Box<dyn Element + 'a>> {
     let (input, text) = text::parse(input)?;
     Ok((input, Box::new(text)))

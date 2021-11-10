@@ -13,7 +13,8 @@ pub struct Array {
 
 /// Parses markdown and returns the list of translatable texts.
 ///
-/// The caller is responsible for freeing the returned memory with `__dealloc`.
+/// The caller is responsible for freeing the returned memory with
+/// [`dealloc_texts`].
 #[no_mangle]
 pub fn texts(input: *const u8, len: usize) -> *const Array {
     let input =
@@ -60,7 +61,7 @@ pub unsafe fn __dealloc(bytes: *mut u8, len: usize) {
     dealloc(bytes, layout);
 }
 
-/// Frees all memory of the given Array of Arrays.
+/// Frees all memory of the given [`Array`] of [`Array`]s.
 #[no_mangle]
 pub unsafe fn dealloc_texts(array: *const Array) {
     let array = *array;

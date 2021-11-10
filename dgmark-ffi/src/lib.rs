@@ -13,7 +13,8 @@ pub struct Texts {
 
 /// Parses markdown and returns the list of translatable texts.
 ///
-/// The caller is responsible for freeing the returned memory with `__dealloc`.
+/// The caller is responsible for freeing the returned memory with
+/// [`__dealloc`].
 #[no_mangle]
 pub extern "C" fn texts(input: *const c_char) -> Texts {
     let input = unsafe {
@@ -42,7 +43,7 @@ pub extern "C" fn texts(input: *const c_char) -> Texts {
     texts
 }
 
-/// Frees all memory of the given `Texts`.
+/// Frees all memory of the given [`Texts`].
 #[no_mangle]
 pub unsafe extern "C" fn __dealloc(texts: Texts) {
     // Retake ownership of all C strings to drop them
