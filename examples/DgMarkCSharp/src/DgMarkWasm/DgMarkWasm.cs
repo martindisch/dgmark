@@ -8,9 +8,9 @@ namespace DgMarkWasmExample
 {
     public class DgMarkWasm : IDisposable
     {
-        private Engine engine;
-        private Module module;
-        private Linker linker;
+        private readonly Engine engine;
+        private readonly Module module;
+        private readonly Linker linker;
 
         public DgMarkWasm()
         {
