@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Wasmtime;
 
@@ -40,22 +42,31 @@ Pretty cool, right?";
             var allocatedSlice = memory.GetSpan(store).Slice(offset);
             utf8Input.AsSpan<byte>().CopyTo(allocatedSlice);
 
-            var resultPointer = (int)texts.Invoke(store, offset, utf8Input.Length);
-            var arrayPtr = memory.ReadInt32(store, resultPointer);
-            var arrayLength = memory.ReadInt32(store, resultPointer + 4);
+            var arrayDescriptorOffset = (int)texts.Invoke(store, offset, utf8Input.Length);
 
-            Console.WriteLine($"Pointer at {arrayPtr} of length {arrayLength}");
+            var extractedTexts = ExtractTexts(memory, store, arrayDescriptorOffset);
+            foreach (var text in extractedTexts)
+            {
+                Console.WriteLine($"- {text}");
+            }
+        }
 
-            var firstPointer = memory.ReadInt32(store, arrayPtr);
-            var firstStringPointer = memory.ReadInt32(store, firstPointer);
-            var firstLen = memory.ReadInt32(store, firstPointer + 4);
-            Console.WriteLine($"{firstStringPointer}, {firstLen}");
-            var firstText = memory.ReadString(store, firstStringPointer, firstLen);
+        static IEnumerable<string> ExtractTexts(Memory memory, Store store, int arrayDescriptorOffset)
+        {
+            var arrayOffset = memory.ReadInt32(store, arrayDescriptorOffset);
+            var arrayLength = memory.ReadInt32(store, arrayDescriptorOffset + 4);
 
-            var lastPointer = memory.ReadInt32(store, arrayPtr + (arrayLength - 1) * 4);
-            var lastText = memory.ReadString(store, memory.ReadInt32(store, lastPointer), memory.ReadInt32(store, lastPointer + 4));
+            return Enumerable
+                .Range(0, arrayLength)
+                .Select(i =>
+                {
+                    var currentArrayDescriptorOffset = memory.ReadInt32(store, arrayOffset + i * 4);
 
-            Console.WriteLine($"{firstText}, {lastText}");
+                    var currentStringOffset = memory.ReadInt32(store, currentArrayDescriptorOffset);
+                    var currentStringLength = memory.ReadInt32(store, currentArrayDescriptorOffset + 4);
+
+                    return memory.ReadString(store, currentStringOffset, currentStringLength);
+                });
         }
     }
 }
