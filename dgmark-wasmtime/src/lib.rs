@@ -14,7 +14,8 @@ pub struct Array {
 /// Parses markdown and returns the list of translatable texts.
 ///
 /// The caller is responsible for freeing the returned memory with
-/// [`dealloc_texts`].
+/// [`dealloc_texts`] and the allocated memory of the `input` string with
+/// [`__dealloc`].
 #[no_mangle]
 pub fn texts(input: *const u8, len: usize) -> *const Array {
     let input =
