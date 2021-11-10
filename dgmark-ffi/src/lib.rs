@@ -1,4 +1,5 @@
 use std::{
+    alloc::{dealloc, Layout},
     ffi::{CStr, CString},
     os::raw::c_char,
 };
@@ -11,6 +12,8 @@ pub struct Texts {
 }
 
 /// Parses markdown and returns the list of translatable texts.
+///
+/// The caller is responsible for freeing the returned memory with `__dealloc`.
 #[no_mangle]
 pub extern "C" fn texts(input: *const c_char) -> Texts {
     let input = unsafe {
@@ -39,4 +42,16 @@ pub extern "C" fn texts(input: *const c_char) -> Texts {
     texts
 }
 
-// TODO: need extra function to deallocate our returned Vec
+/// Frees all memory of the given `Texts`.
+#[no_mangle]
+pub unsafe extern "C" fn __dealloc(texts: Texts) {
+    // Retake ownership of all C strings to drop them
+    for i in 0..texts.len {
+        CString::from_raw(*texts.texts.offset(i as isize));
+    }
+
+    // Deallocate the Vec
+    let align = std::mem::align_of::<usize>();
+    let layout = Layout::from_size_align_unchecked(texts.len as usize, align);
+    dealloc(texts.texts as *mut u8, layout);
+}
