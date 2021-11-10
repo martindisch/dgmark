@@ -19,7 +19,7 @@ We can do quotes too.
 
 Pretty cool, right?";
 
-            var texts = DgMark.Texts(input);
+            var texts = DgMarkFfi.Texts(input);
 
             foreach (var text in texts)
             {

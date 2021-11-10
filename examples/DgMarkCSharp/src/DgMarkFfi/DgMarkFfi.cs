@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 
-public static class DgMark
+public static class DgMarkFfi
 {
     [StructLayout(LayoutKind.Sequential)]
     struct TextsDescriptor
