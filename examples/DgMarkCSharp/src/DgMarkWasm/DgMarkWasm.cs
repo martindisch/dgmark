@@ -29,17 +29,21 @@ namespace DgMarkWasmExample
 
             var alloc = instance.GetFunction(store, "__alloc");
             var dealloc = instance.GetFunction(store, "__dealloc");
+            var deallocTexts = instance.GetFunction(store, "dealloc_texts");
             var texts = instance.GetFunction(store, "texts");
 
-            // Put input into WASM memory
             var utf8Input = Encoding.UTF8.GetBytes(input);
             var offset = (int)alloc.Invoke(store, utf8Input.Length);
             var allocatedSlice = memory.GetSpan(store).Slice(offset);
             utf8Input.AsSpan<byte>().CopyTo(allocatedSlice);
 
             var arrayDescriptorOffset = (int)texts.Invoke(store, offset, utf8Input.Length);
+            var extractedTexts = ExtractTexts(memory, store, arrayDescriptorOffset);
 
-            return ExtractTexts(memory, store, arrayDescriptorOffset);
+            deallocTexts.Invoke(store, arrayDescriptorOffset);
+            dealloc.Invoke(store, offset, utf8Input.Length);
+
+            return extractedTexts;
         }
 
         static IReadOnlyCollection<string> ExtractTexts(Memory memory, Store store, int arrayDescriptorOffset)

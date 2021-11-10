@@ -5,6 +5,7 @@ use std::{
 
 /// Struct holding a starting address and length.
 #[repr(C)]
+#[derive(Clone, Copy)]
 pub struct Array {
     pub offset: usize,
     pub len: usize,
@@ -57,4 +58,18 @@ pub unsafe fn __dealloc(bytes: *mut u8, len: usize) {
     let align = std::mem::align_of::<usize>();
     let layout = Layout::from_size_align_unchecked(len, align);
     dealloc(bytes, layout);
+}
+
+/// Frees all memory of the given Array of Arrays.
+#[no_mangle]
+pub unsafe fn dealloc_texts(array: *const Array) {
+    let array = *array;
+    let align = std::mem::align_of::<Array>();
+
+    for i in 0..array.len {
+        let current_array = *((array.offset + i * align) as *const Array);
+        __dealloc(current_array.offset as *mut u8, current_array.len);
+    }
+
+    __dealloc(array.offset as *mut u8, array.len);
 }
