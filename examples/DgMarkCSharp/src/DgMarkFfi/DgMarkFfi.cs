@@ -18,8 +18,8 @@ namespace DgMarkFfiExample
         [DllImport("../../target/release/libdgmark_ffi", CallingConvention = CallingConvention.Cdecl, EntryPoint = "texts")]
         static extern TextsDescriptor TextsFfi(string input);
 
-        [DllImport("../../target/release/libdgmark_ffi", CallingConvention = CallingConvention.Cdecl, EntryPoint = "__dealloc")]
-        static extern TextsDescriptor Dealloc(TextsDescriptor textsDescriptor);
+        [DllImport("../../target/release/libdgmark_ffi", CallingConvention = CallingConvention.Cdecl, EntryPoint = "dealloc_texts")]
+        static extern TextsDescriptor DeallocTexts(TextsDescriptor textsDescriptor);
 
         unsafe public static IReadOnlyCollection<string> Texts(string input)
         {
@@ -30,7 +30,7 @@ namespace DgMarkFfiExample
                 .Select(i => Marshal.PtrToStringUTF8(textsDescriptor.Texts[i]))
                 .ToList();
 
-            Dealloc(textsDescriptor);
+            DeallocTexts(textsDescriptor);
 
             return texts;
         }
