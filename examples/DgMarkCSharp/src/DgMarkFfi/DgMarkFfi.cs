@@ -3,25 +3,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 
-public static class DgMarkFfi
+namespace DgMarkFfiExample
 {
-    [StructLayout(LayoutKind.Sequential)]
-    struct TextsDescriptor
+    public static class DgMarkFfi
     {
-        public unsafe IntPtr* Texts;
+        [StructLayout(LayoutKind.Sequential)]
+        struct TextsDescriptor
+        {
+            public unsafe IntPtr* Texts;
 
-        public int Size;
-    }
+            public int Size;
+        }
 
-    [DllImport("../../target/release/libdgmark_ffi", CallingConvention = CallingConvention.Cdecl, EntryPoint = "texts")]
-    static extern TextsDescriptor TextsFfi(string input);
+        [DllImport("../../target/release/libdgmark_ffi", CallingConvention = CallingConvention.Cdecl, EntryPoint = "texts")]
+        static extern TextsDescriptor TextsFfi(string input);
 
-    unsafe public static IEnumerable<string> Texts(string input)
-    {
-        var textsDescriptor = TextsFfi(input);
+        unsafe public static IEnumerable<string> Texts(string input)
+        {
+            var textsDescriptor = TextsFfi(input);
 
-        return Enumerable
-            .Range(0, textsDescriptor.Size)
-            .Select(i => Marshal.PtrToStringUTF8(textsDescriptor.Texts[i]));
+            return Enumerable
+                .Range(0, textsDescriptor.Size)
+                .Select(i => Marshal.PtrToStringUTF8(textsDescriptor.Texts[i]));
+        }
     }
 }

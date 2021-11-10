@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DgMarkCSharp
+namespace DgMarkFfiExample
 {
     class Program
     {
