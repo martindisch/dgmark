@@ -1,13 +1,14 @@
 # dgmark
 
-Parser for a custom markdown extension.
+Parser for a custom markdown extension with some experiments using it as WASM
+in the browser and via FFI and WASM from C#.
 
 ## License
 
 Licensed under either of
 
- * [Apache License, Version 2.0](LICENSE-APACHE)
- * [MIT license](LICENSE-MIT)
+- [Apache License, Version 2.0](LICENSE-APACHE)
+- [MIT license](LICENSE-MIT)
 
 at your option.
 
