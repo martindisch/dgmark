@@ -8,6 +8,8 @@ namespace DgMarkWasmExample
 {
     public class DgMarkWasm : IDisposable
     {
+        private const string LibPath = "/home/martin/Projects/dgmark/target/wasm32-unknown-unknown/release/dgmark_wasmtime.wasm";
+
         private readonly Engine engine;
         private readonly Module module;
         private readonly Linker linker;
@@ -17,7 +19,7 @@ namespace DgMarkWasmExample
             engine = new Engine();
             module = Module.FromFile(
                 engine,
-                "../../target/wasm32-unknown-unknown/release/dgmark_wasmtime.wasm");
+                LibPath);
             linker = new Linker(engine);
         }
 

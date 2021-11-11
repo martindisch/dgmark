@@ -7,6 +7,8 @@ namespace DgMarkFfiExample
 {
     public static class DgMarkFfi
     {
+        private const string LibPath = "/home/martin/Projects/dgmark/target/release/libdgmark_ffi.so";
+
         [StructLayout(LayoutKind.Sequential)]
         struct TextsDescriptor
         {
@@ -15,10 +17,10 @@ namespace DgMarkFfiExample
             public int Size;
         }
 
-        [DllImport("../../target/release/libdgmark_ffi", CallingConvention = CallingConvention.Cdecl, EntryPoint = "texts")]
+        [DllImport(LibPath, CallingConvention = CallingConvention.Cdecl, EntryPoint = "texts")]
         static extern TextsDescriptor TextsFfi(string input);
 
-        [DllImport("../../target/release/libdgmark_ffi", CallingConvention = CallingConvention.Cdecl, EntryPoint = "dealloc_texts")]
+        [DllImport(LibPath, CallingConvention = CallingConvention.Cdecl, EntryPoint = "dealloc_texts")]
         static extern TextsDescriptor DeallocTexts(TextsDescriptor textsDescriptor);
 
         unsafe public static IReadOnlyCollection<string> Texts(string input)
