@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using BenchmarkDotNet.Attributes;
 using DgMarkFfiExample;
 using DgMarkWasmExample;
@@ -7,23 +8,15 @@ namespace Bench
 {
     public class Bencher
     {
+        const string InputPath = "/home/martin/Projects/dgmark/dgmark/benches/inputs/text_with_everything.md";
+
         private readonly DgMarkWasm dgMarkWasm;
-        private readonly string input = @"Hi there! Let's see a productlist:
-[[productlist: 1|2|20]]
-
-That went well. How about another one?
-
-[[productlist:20]]
-
-We can do quotes too.
-
-[[quote:This is supposed to be the quote""And this is the source""]]
-
-Pretty cool, right?";
+        private readonly string input;
 
         public Bencher()
         {
             dgMarkWasm = new DgMarkWasm();
+            input = File.ReadAllText(InputPath);
         }
 
         [Benchmark]
