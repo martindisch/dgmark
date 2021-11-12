@@ -17,10 +17,10 @@ namespace DgMarkFfiExample
             public int Size;
         }
 
-        [DllImport(LibPath, CallingConvention = CallingConvention.Cdecl, EntryPoint = "texts")]
+        [DllImport(LibPath, CallingConvention = CallingConvention.Winapi, EntryPoint = "texts")]
         static extern TextsDescriptor TextsFfi(string input);
 
-        [DllImport(LibPath, CallingConvention = CallingConvention.Cdecl, EntryPoint = "dealloc_texts")]
+        [DllImport(LibPath, CallingConvention = CallingConvention.Winapi, EntryPoint = "dealloc_texts")]
         static extern TextsDescriptor DeallocTexts(TextsDescriptor textsDescriptor);
 
         unsafe public static IReadOnlyCollection<string> Texts(string input)
