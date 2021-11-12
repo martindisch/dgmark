@@ -21,7 +21,7 @@ namespace DgMarkFfiExample
         static extern TextsDescriptor TextsFfi(string input);
 
         [DllImport(LibPath, CallingConvention = CallingConvention.Winapi, EntryPoint = "dealloc_texts")]
-        static extern TextsDescriptor DeallocTexts(TextsDescriptor textsDescriptor);
+        static extern void DeallocTexts(TextsDescriptor textsDescriptor);
 
         unsafe public static IReadOnlyCollection<string> Texts(string input)
         {
