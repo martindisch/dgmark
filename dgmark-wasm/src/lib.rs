@@ -10,5 +10,5 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 pub fn texts(input: &str) -> JsValue {
     let result = dgmark::texts(input).unwrap_or_else(|_| vec![]);
 
-    JsValue::from_serde(&result).unwrap()
+    serde_wasm_bindgen::to_value(&result).unwrap()
 }
