@@ -11,3 +11,4 @@ dgmark = { path = "../dgmark" }
 wasm-bindgen = "0.2.78"
 js-sys = "0.3.55"
 wee_alloc = { version = "0.4.5", optional = true }
+serde_json = "1.0.71"
