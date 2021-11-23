@@ -1,5 +1,4 @@
 use js_sys::Array;
-use miniserde::json;
 use wasm_bindgen::prelude::*;
 
 #[cfg(feature = "wee_alloc")]
@@ -11,5 +10,5 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 pub fn texts(input: &str) -> JsValue {
     let result = dgmark::texts(input).unwrap_or_else(|_| vec![]);
 
-    JsValue::from_str(&json::to_string(&result))
+    JsValue::from_serde(&result).unwrap()
 }
