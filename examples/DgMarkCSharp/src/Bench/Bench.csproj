@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DgMarkWasm\DgMarkWasm.csproj" />
+    <ProjectReference Include="..\DgMarkUniversalWasm\DgMarkUniversalWasm.csproj" />
     <ProjectReference Include="..\DgMarkFfi\DgMarkFfi.csproj" />
   </ItemGroup>
 
