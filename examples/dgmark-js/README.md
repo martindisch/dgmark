@@ -1,6 +1,6 @@
 # dgmark-js demo
 
-To run this, you have to first compile the WASM module.
+To run this, you have to first compile the Wasm module.
 
 ```console
 wasm-pack build ../../dgmark-wasm -- --features wee_alloc

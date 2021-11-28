@@ -10,7 +10,7 @@ cargo build --release
 
 ## DgMarkWasm
 
-This one requires a WASM module.
+This one requires a Wasm module.
 
 ```console
 cargo build --release --target wasm32-unknown-unknown

@@ -1,7 +1,7 @@
 # dgmark
 
-Parser for a custom markdown extension with some experiments using it as WASM
-in the browser and via FFI and WASM from C#.
+Parser for a custom markdown extension with some experiments using it as Wasm
+in the browser and via FFI and Wasm from C#.
 
 ## License
 
